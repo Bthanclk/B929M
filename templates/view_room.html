@@ -94,12 +94,27 @@
         }
 
         .members-container {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            position: absolute;
-            top: 20px;
-            left: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        overflow-y: auto; /* Üyeler listesi için scroll ekleniyor */
+        max-height: 200px; /* Görüntülenecek maksimum yükseklik */
+        }
+        /* Scroll çubuğu stilleri */
+        .members-container::-webkit-scrollbar {
+        width: 12px; /* Dikey scroll çubuğu genişliği */
+        }
+
+        .members-container::-webkit-scrollbar-thumb {
+        background-color: #333; /* Scroll çubuğu rengi */
+        border-radius: 10px; /* Scroll çubuğu kenar yarıçapı */
+        }
+
+        .members-container::-webkit-scrollbar-track {
+        background-color: #1a1a1a; /* Scroll çubuğu arka plan rengi */
         }
 
         .other-people-container {
@@ -112,17 +127,17 @@
         }
 
         ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        list-style: none;
+        padding: 0;
+        margin: 0;
         }
 
         ul li {
-            background-color: #333;
-            border-radius: 4px;
-            padding: 8px 12px;
-            font-size: 16px;
-            margin-bottom: 5px;
+        background-color: #333;
+        border-radius: 4px;
+        padding: 8px 12px;
+        font-size: 16px;
+        margin-bottom: 5px;
         }
     </style>
     <script>
@@ -177,14 +192,20 @@
     </div>
 
     <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-        <button type="button" id="back_to_index_btn" onclick="window.location.href='http://127.0.0.1:5000/'">Ana Sayfaya Dön</button>
+        <button type="button" id="back_to_index_btn" onclick="goToHomePage()">Ana Sayfaya Dön</button>
+
+<script>
+    function goToHomePage() {
+        window.location.href = window.location.protocol + '//' + document.domain + ':' + location.port;
+    }
+</script>
         <button type="button" id="delete_room_btn" onclick="deleteRoom('{{ room[0] }}')">Odayı Sil</button>
     </div>
 
     <script>
-        const socket = io.connect("http://127.0.0.1:5000");
+        const socket = io.connect("http://16.171.152.178:5000/");
         socket.on('connect', function () {
-            socket.emit('join_room', {
+            socket.emit('join_room',{
                 username: "{{username}}",
                 room: "{{room[0]}}"
             });
@@ -238,13 +259,6 @@
             messages_div.insertBefore(newNode, messages_div.firstChild);
         }
 
-        window.onbeforeunload = function () {
-            socket.emit('leave_room', {
-                username: "{{ username }}",
-                room: "{{room[0]}}"
-            });
-        };
-
         socket.on('receive_message', function (data) {
             const newNode = document.createElement('div');
             newNode.innerHTML = `<b>${data.username}&nbsp;[${data.created_at}]:&nbsp;</b> ${data.message}`;
@@ -255,15 +269,9 @@
         socket.on('join_room_announcement', function (data) {
             if (data.username !== "{{ username }}") {
                 const newNode = document.createElement('div');
-                newNode.innerHTML = `<b>${data.username}</b> Odaya katıldı`;
+                newNode.innerHTML = `<b>${data.username}</b> Çevrimiçi oldu`;
                 document.getElementById('messages').appendChild(newNode);
             }
-        });
-
-        socket.on('leave_room_announcement', function (data) {
-            const newNode = document.createElement('div');
-            newNode.innerHTML = `<b>${data.username}</b> Odadan ayrıldı`;
-            document.getElementById('messages').appendChild(newNode);
         });
 
         socket.on('room_deleted', function (data) {
@@ -280,9 +288,9 @@
                 }).then(response => {
                     if (response.ok) {
                         alert("Oda başarıyla silindi.");
-                        window.location.href = "http://127.0.0.1:5000/";
+                        window.location.href =  window.location.protocol + '//' + document.domain + ':' + location.port;
                     } else {
-                        alert("Oda silinirken bir hata oluştu.");
+                        alert("Odayı silmek için yetkiniz yok.");
                     }
                 });
             }

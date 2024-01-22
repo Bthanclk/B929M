@@ -155,7 +155,7 @@
                 }
             });
         });
-</script>
+    </script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -168,7 +168,7 @@
                 newRoomItem.setAttribute('data-room-id', data.roomId);
                 newRoomItem.innerHTML = `
                     <form method="get" action="/rooms/${data.roomId}">
-                        <button type="submit">${data.roomName}, ${data.roomId}</button>
+                        <button type="submit">${data.roomName} Adlı Sohbet</button>
                     </form>
                 `;
                 roomList.appendChild(newRoomItem);
@@ -198,7 +198,7 @@
                         {% for room in rooms %}
                             <li data-room-id="{{ room[0] }}">
                                 <form method="get" action="/rooms/{{ room[0] }}">
-                                    <button type="submit">{{ room[2] }}, {{ room[0] }}</button>
+                                    <button type="submit">{{ room[2] }} Adlı Sohbet</button>
                                 </form>
                             </li>
                         {% endfor %}

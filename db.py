@@ -416,4 +416,3 @@ def get_message(room_id,page=0):
                 return []
     except mysql.connector.Error as e:
         print(f"Hata: {e}")
-        return []

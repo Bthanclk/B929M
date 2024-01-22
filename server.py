@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask import Flask, render_template, redirect, url_for,request,redirect,url_for,session
-from flask_socketio import SocketIO,send,join_room,leave_room,send,emit
+from flask_socketio import SocketIO,send,join_room,send,emit
 from flask_login import LoginManager,login_required, login_user, logout_user,current_user
 
 import json
@@ -13,7 +13,7 @@ from flask_session import Session
 
 
 app=Flask(__name__)
-app.secret_key = "my secret key"
+app.secret_key = "Secret Key"
 app.config['SECRET']="123456"
 socketio=SocketIO(app, cors_allowed_origins="*") 
 login_manager = LoginManager()
@@ -108,7 +108,7 @@ def create_room():
             message = "Kayıtlı Olmayan Kullanıcı"
             print(message)
 
-    return render_template('create_room.html', message=message)
+    return render_template("create_room.html", server_ip="http://16.171.152.178:5000/")
 
 @app.route('/rooms/<room_id>/delete', methods=['POST'])
 def delete_room(room_id):
@@ -193,12 +193,6 @@ def handle_join_room_event(data):
     app.logger.info("{} Adlı Kullanıcısı {} Odasına Katıldı".format(data['username'],data['room']))
     join_room(data['room'])
     socketio.emit('join_room_announcement',data)
-
-@socketio.on('leave_room')
-def handle_leave_room_event(data):
-    app.logger.info("{} Adlı kullanıcı {} odasından ayrıldı".format(data['username'], data['room']))
-    leave_room(data['room'])
-    socketio.emit('leave_room_announcement', data, room=data['room'])
 
 @login_manager.user_loader
 def load_user(username):
